@@ -7,9 +7,45 @@ export const metadata = {
   description: 'Chhayapoth: A Medium-like blogging platform with rich author dashboards, 3D button depths, and custom aesthetics.',
 };
 
+const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 export default function RootLayout({ children }) {
+  if (!clerkKey) {
+    return (
+      <html lang="en">
+        <body style={{ 
+          fontFamily: 'sans-serif', 
+          padding: '40px', 
+          backgroundColor: '#f8fafc',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          margin: 0
+        }}>
+          <div style={{
+            border: '3px solid black',
+            padding: '30px',
+            borderRadius: '24px',
+            backgroundColor: 'white',
+            boxShadow: '8px 8px 0px black',
+            maxWidth: '500px'
+          }}>
+            <h2 style={{ color: '#ef4444', fontWeight: 900, marginBottom: '12px' }}>⚠️ Setup Required: Clerk Key Missing</h2>
+            <p style={{ fontWeight: 600, color: '#334155', lineHeight: 1.5 }}>
+              Chhayapoth is running but the Clerk Publishable Key is missing from the environment.
+            </p>
+            <p style={{ fontSize: '14px', color: '#64748b', marginTop: '10px', lineHeight: 1.5 }}>
+              Please add <code style={{ backgroundColor: '#f1f5f9', padding: '2px 4px', borderRadius: '4px' }}>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> in your Vercel Project Settings under Environment Variables, and then redeploy the site.
+            </p>
+          </div>
+        </body>
+      </html>
+    );
+  }
+
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={clerkKey}>
       <html lang="en">
         <body>
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
