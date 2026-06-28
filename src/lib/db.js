@@ -6,7 +6,13 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 let supabase = null;
 if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
+  try {
+    // Validate URL structure first to prevent module-level startup crashes
+    new URL(supabaseUrl);
+    supabase = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
+  } catch (urlErr) {
+    console.error('Supabase client initialization failed due to invalid URL format:', urlErr);
+  }
 } else {
   console.warn(
     'Supabase Warning: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing. Database calls will fail at runtime.'
