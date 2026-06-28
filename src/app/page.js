@@ -13,11 +13,21 @@ export default async function Home({ searchParams }) {
   const searchQuery = params?.q || '';
 
   const user = await getSessionUser();
-  let posts = await getPosts();
-  const allSeries = await getAllSeries();
+  
+  let posts = [];
+  let allSeries = [];
+  let dbError = null;
+
+  try {
+    posts = await getPosts();
+    allSeries = await getAllSeries();
+  } catch (err) {
+    console.error('Failed to connect to Supabase:', err);
+    dbError = err.message || 'Supabase connection failed';
+  }
 
   // Apply search query filter in code if present
-  if (searchQuery) {
+  if (searchQuery && posts.length > 0) {
     const q = searchQuery.toLowerCase();
     posts = posts.filter(
       (p) =>
@@ -28,7 +38,7 @@ export default async function Home({ searchParams }) {
   }
 
   // Apply genre filter (checks if query matches one of the comma-separated genres)
-  if (genre && genre !== 'All') {
+  if (genre && genre !== 'All' && posts.length > 0) {
     posts = posts.filter((p) => {
       if (!p.genres) return false;
       return p.genres.split(',').some(g => g.trim().toLowerCase() === genre.toLowerCase());
@@ -40,6 +50,30 @@ export default async function Home({ searchParams }) {
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}>
+      
+      {/* Graceful Database Error Notice */}
+      {dbError && (
+        <div style={{
+          border: '3px solid var(--color-black)',
+          backgroundColor: '#fee2e2',
+          color: 'var(--color-black)',
+          padding: '24px',
+          borderRadius: '24px',
+          boxShadow: '4px 4px 0px var(--color-black)',
+          textAlign: 'left',
+          marginTop: '20px'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '8px', color: 'var(--color-red)' }}>
+            ⚠️ Database Connection Issue
+          </h3>
+          <p style={{ fontSize: '14px', fontWeight: 650, margin: 0, lineHeight: 1.5 }}>
+            Chhayapoth is currently unable to query Supabase. Please ensure your environment variables (like <code style={{ backgroundColor: 'rgba(0,0,0,0.05)', padding: '2px 4px', borderRadius: '4px' }}>NEXT_PUBLIC_SUPABASE_URL</code>) are set correctly in your Vercel Project dashboard.
+          </p>
+          <p style={{ fontSize: '12px', color: 'var(--color-grey-dark)', marginTop: '12px', fontFamily: 'monospace' }}>
+            Diagnostic message: {dbError}
+          </p>
+        </div>
+      )}
       
       {/* Hero & Search Header */}
       <div style={{
