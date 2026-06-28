@@ -14,18 +14,32 @@ CREATE TABLE IF NOT EXISTS authors (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable RLS (optional, for security)
--- ALTER TABLE authors ENABLE ROW LEVEL SECURITY;
+-- 2. Create Series/Spaces Table
+CREATE TABLE IF NOT EXISTS series (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  cover_image TEXT,
+  type TEXT DEFAULT 'blog', -- 'series' | 'blog' | 'single'
+  author_id TEXT REFERENCES authors(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- 2. Create Posts Table
+-- Disable Row Level Security for Spaces creation flow
+ALTER TABLE series DISABLE ROW LEVEL SECURITY;
+
+-- 3. Create Posts Table
 CREATE TABLE IF NOT EXISTS posts (
   id TEXT PRIMARY KEY,
   slug TEXT NOT NULL UNIQUE,
-  title TEXT NOT NULL,
+  title TEXT, -- Nullable for 'single' post types
   excerpt TEXT,
   content TEXT NOT NULL,
   preview_image TEXT,
   author_id TEXT REFERENCES authors(id) ON DELETE CASCADE,
+  series_id TEXT REFERENCES series(id) ON DELETE SET NULL,
+  episode_number INTEGER,
+  genres TEXT DEFAULT 'Random',
   category TEXT DEFAULT 'General',
   read_time TEXT,
   views INTEGER DEFAULT 0,
@@ -36,10 +50,7 @@ CREATE TABLE IF NOT EXISTS posts (
   updated_at TIMESTAMP WITH TIME ZONE
 );
 
--- Enable RLS (optional, for security)
--- ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-
--- 3. Create Comments Table
+-- 4. Create Comments Table
 CREATE TABLE IF NOT EXISTS comments (
   id TEXT PRIMARY KEY,
   post_id TEXT REFERENCES posts(id) ON DELETE CASCADE,
@@ -48,10 +59,7 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable RLS (optional, for security)
--- ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
-
--- 4. Create View Increment RPC Function
+-- 5. Create View Increment RPC Function
 -- This function is invoked by our app to atomically increase page views
 CREATE OR REPLACE FUNCTION increment_views(row_id TEXT)
 RETURNS VOID AS $$
@@ -62,7 +70,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 5. Create Increment Posts Count Function
+-- 6. Create Increment Posts Count Function
 CREATE OR REPLACE FUNCTION increment_posts_count(author_row_id TEXT)
 RETURNS VOID AS $$
 BEGIN
@@ -72,7 +80,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 6. Create Decrement Posts Count Function
+-- 7. Create Decrement Posts Count Function
 CREATE OR REPLACE FUNCTION decrement_posts_count(author_row_id TEXT)
 RETURNS VOID AS $$
 BEGIN
