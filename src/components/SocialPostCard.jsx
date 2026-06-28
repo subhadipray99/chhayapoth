@@ -17,26 +17,35 @@ export default function SocialPostCard({ post }) {
   const author = post.author || {};
   const series = post.series || {};
 
-  // Formatter for relative time
+  // Formatter for relative time (defensively safe against invalid timestamps)
   const getRelativeTime = (dateString) => {
-    const now = new Date();
-    const past = new Date(dateString || post.created_at);
-    const msPerMinute = 60 * 1000;
-    const msPerHour = msPerMinute * 60;
-    const msPerDay = msPerHour * 24;
+    try {
+      const dateVal = dateString || post?.created_at;
+      if (!dateVal) return 'some time ago';
+      
+      const past = new Date(dateVal);
+      if (isNaN(past.getTime())) return 'some time ago';
 
-    const elapsed = now - past;
+      const now = new Date();
+      const msPerMinute = 60 * 1000;
+      const msPerHour = msPerMinute * 60;
+      const msPerDay = msPerHour * 24;
 
-    if (elapsed < msPerMinute) {
-      return 'just now';
-    } else if (elapsed < msPerHour) {
-      const minutes = Math.round(elapsed / msPerMinute);
-      return `${minutes}m ago`;
-    } else if (elapsed < msPerDay) {
-      const hours = Math.round(elapsed / msPerHour);
-      return `${hours}h ago`;
-    } else {
-      return past.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const elapsed = now - past;
+
+      if (elapsed < msPerMinute) {
+        return 'just now';
+      } else if (elapsed < msPerHour) {
+        const minutes = Math.round(elapsed / msPerMinute);
+        return `${minutes}m ago`;
+      } else if (elapsed < msPerDay) {
+        const hours = Math.round(elapsed / msPerHour);
+        return `${hours}h ago`;
+      } else {
+        return past.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      }
+    } catch (e) {
+      return 'some time ago';
     }
   };
 

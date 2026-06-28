@@ -174,7 +174,7 @@ export default async function Home({ searchParams }) {
             <h2 style={{ fontSize: '18px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BookOpen size={18} style={{ color: 'var(--color-orange)' }} />
               <span>
-                {category ? `${category} Stories` : searchQuery ? `Search Results` : 'Stories Stream'}
+                {genre ? `${genre} Stories` : searchQuery ? `Search Results` : 'Stories Stream'}
               </span>
             </h2>
             <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--color-grey-dark)', backgroundColor: 'var(--color-grey-light)', border: '1.5px solid var(--color-black)', padding: '2px 8px', borderRadius: '8px' }}>
