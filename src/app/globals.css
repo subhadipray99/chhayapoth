@@ -33,19 +33,7 @@
   --shadow-pop: 6px 6px 0px var(--color-black);
 }
 
-/* Dark mode overrides (optional soft integration) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #090d16;
-    --foreground: #f8fafc;
-    --color-cream: #090d16;
-    --color-white: #0f172a;
-    --color-grey-light: #1e293b;
-    --color-grey-medium: #334155;
-    --color-grey-dark: #94a3b8;
-    --shadow-pop: 6px 6px 0px #000000;
-  }
-}
+
 
 * {
   box-sizing: border-box;
