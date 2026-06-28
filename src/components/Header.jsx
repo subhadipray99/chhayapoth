@@ -12,7 +12,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isSignedIn } = useAuth();
 
-  const categories = ['All', 'Design', 'Philosophy', 'Tech', 'Life'];
+  const genres = ['All', 'Fiction', 'Poetry', 'Philosophy', 'Life', 'Tech'];
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
@@ -74,22 +74,22 @@ export default function Header() {
               </Link>
             </li>
             <div style={{ width: '2px', height: '16px', backgroundColor: 'var(--color-black)', opacity: 0.3 }}></div>
-            {categories.map((cat) => {
-              const href = cat === 'All' ? '/' : `/?category=${cat}`;
+            {genres.map((g) => {
+              const href = g === 'All' ? '/' : `/?genre=${g}`;
               return (
-                <li key={cat}>
+                <li key={g}>
                   <Link 
                     href={href}
                     style={{
                       fontSize: '15px',
                       fontWeight: 700,
-                      color: pathname === href || (cat === 'All' && pathname === '/') ? 'var(--color-orange)' : 'var(--color-black-soft)',
+                      color: pathname === href || (g === 'All' && pathname === '/') ? 'var(--color-orange)' : 'var(--color-black-soft)',
                       padding: '6px 12px',
                       borderRadius: '8px',
                       transition: 'color 0.2s ease'
                     }}
                   >
-                    {cat}
+                    {g}
                   </Link>
                 </li>
               );
@@ -111,12 +111,14 @@ export default function Header() {
           <div>
             {isSignedIn ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Link href="/author" style={{ display: 'flex' }} className="desktop-nav">
-                  <Button3D variant="white" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                    <LayoutDashboard size={16} style={{ marginRight: '6px' }} />
-                    Dashboard
-                  </Button3D>
-                </Link>
+                <div style={{ display: 'none' }} className="desktop-nav">
+                  <Link href="/author">
+                    <Button3D variant="white" style={{ padding: '8px 16px', fontSize: '14px' }}>
+                      <LayoutDashboard size={16} style={{ marginRight: '6px' }} />
+                      Dashboard
+                    </Button3D>
+                  </Link>
+                </div>
                 <UserButton afterSignOutUrl="/" />
               </div>
             ) : (
@@ -178,10 +180,10 @@ export default function Header() {
               </Link>
             </li>
             <div style={{ height: '1px', backgroundColor: 'var(--color-grey-light)' }}></div>
-            {categories.map((cat) => {
-              const href = cat === 'All' ? '/' : `/?category=${cat}`;
+            {genres.map((g) => {
+              const href = g === 'All' ? '/' : `/?genre=${g}`;
               return (
-                <li key={cat}>
+                <li key={g}>
                   <Link 
                     href={href}
                     onClick={closeMobileMenu}
@@ -189,10 +191,10 @@ export default function Header() {
                       fontSize: '18px',
                       fontWeight: 800,
                       display: 'block',
-                      color: pathname === href || (cat === 'All' && pathname === '/') ? 'var(--color-orange)' : 'var(--color-black)'
+                      color: pathname === href || (g === 'All' && pathname === '/') ? 'var(--color-orange)' : 'var(--color-black)'
                     }}
                   >
-                    {cat}
+                    {g}
                   </Link>
                 </li>
               );

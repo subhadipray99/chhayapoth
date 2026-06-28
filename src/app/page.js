@@ -9,7 +9,7 @@ import { Search, Flame, BookOpen, Compass, Sparkles } from 'lucide-react';
 export default async function Home({ searchParams }) {
   // Await searchParams in Next.js 16/App Router
   const params = await searchParams;
-  const category = params?.category || '';
+  const genre = params?.genre || '';
   const searchQuery = params?.q || '';
 
   const user = await getSessionUser();
@@ -27,9 +27,12 @@ export default async function Home({ searchParams }) {
     );
   }
 
-  // Apply category filter
-  if (category && category !== 'All') {
-    posts = posts.filter((p) => p.category?.toLowerCase() === category.toLowerCase());
+  // Apply genre filter (checks if query matches one of the comma-separated genres)
+  if (genre && genre !== 'All') {
+    posts = posts.filter((p) => {
+      if (!p.genres) return false;
+      return p.genres.split(',').some(g => g.trim().toLowerCase() === genre.toLowerCase());
+    });
   }
 
   // Pick top 4 recommended spaces for sidebar
